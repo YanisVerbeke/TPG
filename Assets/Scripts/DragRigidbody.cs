@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DragRigidbody : MonoBehaviour
 {
-    public float forceAmount = 500;
+    public float forceAmount;
 
     List<GameObject> paperObjects = new List<GameObject>();
 
@@ -13,12 +13,14 @@ public class DragRigidbody : MonoBehaviour
     Vector3 originalScreenTargetPosition;
     Vector3 originalRigidbodyPos;
     float selectionDistance;
+    GameController gameController;
 
     // Start is called before the first frame update
     void Start()
     {
         targetCamera = GetComponent<Camera>();
         paperObjects = GameObject.FindGameObjectsWithTag("Paper").ToList();
+        gameController = GameObject.Find("GameController").GetComponent<GameController>();
     }
 
     void Update()
@@ -44,11 +46,11 @@ public class DragRigidbody : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (selectedRigidbody)
+        if (selectedRigidbody && gameController.IsTimerActive)
         {
             Vector3 mousePositionOffset = targetCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, selectionDistance)) - originalScreenTargetPosition;
             Vector3 newVelocity = (originalRigidbodyPos + mousePositionOffset - selectedRigidbody.GetComponent<Rigidbody>().transform.position) * forceAmount * Time.deltaTime;
-            if (newVelocity.y < 0)
+            if (newVelocity.y < 0 && newVelocity.y <= selectedRigidbody.GetComponent<Rigidbody>().velocity.y)
             {
                 selectedRigidbody.GetComponent<Rigidbody>().velocity = newVelocity;
                 foreach (var item in paperObjects)

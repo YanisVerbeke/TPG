@@ -15,7 +15,7 @@ public class PaperController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.y < -20)
+        if (transform.position.y < -25)
         {
             transform.position += new Vector3(0, 48, 0);
             gameController.Score++;
