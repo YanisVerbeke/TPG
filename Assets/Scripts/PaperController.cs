@@ -18,7 +18,15 @@ public class PaperController : MonoBehaviour
         if (transform.position.y < -25)
         {
             transform.position += new Vector3(0, 48, 0);
-            gameController.Score++;
+            if (gameController.ActualTurn == "Player1")
+            {
+                gameController.ScorePlayer1++;
+            }
+            else if (gameController.ActualTurn == "Player2")
+            {
+                gameController.ScorePlayer2++;
+            }
+
         }
     }
 

@@ -1,34 +1,58 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    public int Score { get; set; }
-    public enum State { MENU, PLAYER, COUNTDOWN, GAME, RESULT };
+    public enum State { MENU, PLAYER, GAME, RESULT };
+
+    public int Player1Id { get; set; }
+    public int Player2Id { get; set; }
+    public int ScorePlayer1 { get; set; }
+    public int ScorePlayer2 { get; set; }
     public State CurrentState { get; set; }
-    public bool IsTimerActive { get; set; }
-    private GameObject _gamePanel, _playerPanel, _menuPanel, _resultPanel, _papersObject;
+    public bool IsGameStarted { get; set; }
+    public bool IsGameEnded { get; set; }
+    public string ActualTurn { get; set; }
+
+    private GameObject _gamePanel, _playerPanel, _menuPanel, _resultPanel, _papersObject, _endText, _endButton;
+    private List<GameObject> _papersList;
+    private Text _countdownText;
+    private float _countdownTimer;
+    private VisualTimer _visualTimer;
+    [SerializeField]
+    private List<Sprite> playerImages;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        Score = 0;
-        CurrentState = State.MENU;
-        IsTimerActive = true;
         _gamePanel = GameObject.Find("GamePanel");
         _playerPanel = GameObject.Find("PlayerPanel");
         _menuPanel = GameObject.Find("MenuPanel");
-        //_resultPanel = GameObject.Find("ResultPanel");
+        _resultPanel = GameObject.Find("ResultPanel");
         _papersObject = GameObject.Find("PapersObject");
-        UpdateCurrentScene();
+        _countdownText = GameObject.Find("CountdownText").GetComponent<Text>();
+        _endText = GameObject.Find("EndText");
+        _endButton = GameObject.Find("EndButton");
+        _visualTimer = GameObject.Find("VisualTimer").GetComponent<VisualTimer>();
+        FillPaperList();
+        ResetGame();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        if (CurrentState == State.GAME)
+        {
+            StartGameCountdown();
+            if (IsGameEnded && _papersList[0].GetComponent<Rigidbody>().velocity.y > -2)
+            {
+                SetActiveEndUI(true);
+            }
+        }
     }
 
     public void UpdateCurrentScene()
@@ -37,8 +61,8 @@ public class GameController : MonoBehaviour
         _playerPanel.SetActive(false);
         _menuPanel.SetActive(false);
         _papersObject.SetActive(false);
-        //_resultPanel.SetActive(true);
-        switch(CurrentState)
+        _resultPanel.SetActive(false);
+        switch (CurrentState)
         {
             case State.MENU:
                 _menuPanel.SetActive(true);
@@ -46,19 +70,88 @@ public class GameController : MonoBehaviour
             case State.PLAYER:
                 _playerPanel.SetActive(true);
                 break;
-            case State.COUNTDOWN:
-                _gamePanel.SetActive(true);
-                _papersObject.SetActive(true);
-                break;
             case State.GAME:
+                NewGame();
                 _gamePanel.SetActive(true);
                 _papersObject.SetActive(true);
                 break;
             case State.RESULT:
-                //_resultPanel.SetActive(true);
+                _resultPanel.SetActive(true);
                 break;
             default:
                 break;
         }
+    }
+
+    private void StartGameCountdown()
+    {
+        if (_countdownTimer > 1)
+        {
+            _countdownTimer -= Time.deltaTime;
+            _countdownText.text = Math.Truncate(_countdownTimer).ToString();
+            _countdownText.color = new Color { r = 0, g = 0, b = 0, a = ((float)(_countdownTimer - Math.Truncate(_countdownTimer))) };
+        }
+        else if (_countdownTimer >= 0)
+        {
+            _countdownTimer -= Time.deltaTime;
+            IsGameStarted = true;
+            _countdownText.text = "GO !";
+            _countdownText.color = new Color { r = 0, g = 0, b = 0, a = ((float)(_countdownTimer - Math.Truncate(_countdownTimer))) };
+        }
+        else
+        {
+            _countdownText.text = "";
+        }
+    }
+
+    private void SetActiveEndUI(bool value)
+    {
+        _endText.SetActive(value);
+        _endButton.SetActive(value);
+    }
+
+    public void NewGame()
+    {
+        IsGameStarted = false;
+        IsGameEnded = false;
+        _countdownText.text = "";
+        _countdownTimer = 4;
+        _visualTimer.ResetTimer();
+        ResetPapersPosition();
+        SetActiveEndUI(false);
+    }
+
+    public void ResetGame()
+    {
+        NewGame();
+        Player1Id = UnityEngine.Random.Range(0,9);
+        Player2Id = UnityEngine.Random.Range(0, 9);
+        ScorePlayer1 = 0;
+        ScorePlayer2 = 0;
+        ActualTurn = "Player1";
+        CurrentState = State.MENU;
+        UpdateCurrentScene();
+    }
+
+    private void FillPaperList()
+    {
+        _papersList = new List<GameObject>();
+        _papersList.Add(GameObject.Find("Paper"));
+        _papersList.Add(GameObject.Find("Paper (1)"));
+        _papersList.Add(GameObject.Find("Paper (2)"));
+        _papersList.Add(GameObject.Find("Paper (3)"));
+    }
+
+    private void ResetPapersPosition()
+    {
+        for (int i = 0; i < _papersList.Count; i++)
+        {
+            _papersList[i].transform.position = new Vector3(0, 12 * i, -5);
+        }
+    }
+
+    public Sprite GetPlayerImage(int id)
+    {
+        return playerImages[id];
     }
 }

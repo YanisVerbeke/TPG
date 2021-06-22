@@ -46,7 +46,7 @@ public class DragRigidbody : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (selectedRigidbody && gameController.IsTimerActive)
+        if (selectedRigidbody && gameController.IsGameStarted && !gameController.IsGameEnded)
         {
             Vector3 mousePositionOffset = targetCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, selectionDistance)) - originalScreenTargetPosition;
             Vector3 newVelocity = (originalRigidbodyPos + mousePositionOffset - selectedRigidbody.GetComponent<Rigidbody>().transform.position) * forceAmount * Time.deltaTime;

@@ -15,15 +15,16 @@ public class VisualTimer : MonoBehaviour
     {
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
         image = GetComponent<Image>();
+        textTimer = GetComponentInChildren<Text>();
         timer = 10;
         image.fillAmount = 0;
-        textTimer = GetComponentInChildren<Text>();
+        textTimer.text = "";
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (gameController.IsTimerActive)
+        if (gameController.IsGameStarted && !gameController.IsGameEnded)
         {
             if (image.fillAmount >= 1)
             {
@@ -31,12 +32,19 @@ public class VisualTimer : MonoBehaviour
                 image.fillAmount = 0;
             }
             image.fillAmount += Time.deltaTime;
+            textTimer.text = timer.ToString();
+            if (timer <= 0)
+            {
+                image.fillAmount = 1;
+                gameController.IsGameEnded = true;
+            }
         }
-        textTimer.text = timer.ToString();
-        if (timer <= 0)
-        {
-            image.fillAmount = 1;
-            gameController.IsTimerActive = false;
-        }
+    }
+
+    public void ResetTimer()
+    {
+        timer = 10;
+        image.fillAmount = 0;
+        textTimer.text = "";
     }
 }
