@@ -40,7 +40,9 @@ public class GameController : MonoBehaviour
         _visualTimer = GameObject.Find("VisualTimer").GetComponent<VisualTimer>();
         _emptyRoll = GameObject.Find("EmptyRoll");
         FillPaperList();
-        ResetGame();
+        Player1Id = 0;
+        Player2Id = 0;
+        //ResetGame();
     }
 
     // Update is called once per frame
@@ -127,8 +129,8 @@ public class GameController : MonoBehaviour
     public void ResetGame()
     {
         NewGame();
-        Player1Id = UnityEngine.Random.Range(0,9);
-        Player2Id = UnityEngine.Random.Range(0, 9);
+        //Player1Id = UnityEngine.Random.Range(0,9);
+        //Player2Id = UnityEngine.Random.Range(0, 9);
         ScorePlayer1 = 0;
         ScorePlayer2 = 0;
         ActualTurn = "Player1";
@@ -156,5 +158,36 @@ public class GameController : MonoBehaviour
     public Sprite GetPlayerImage(int id)
     {
         return playerImages[id];
+    }
+
+    public void GetFlutterSettings(string data)
+    {
+        FlutterUnityPlugin.Message message = FlutterUnityPlugin.Messages.Receive(data);
+
+        Player1Id = int.Parse(message.data.Split(',')[0]);
+        Player2Id = int.Parse(message.data.Split(',')[1]);
+
+        ResetGame();
+    }
+
+    public void SendFlutterResult()
+    {
+        string data = "";
+
+        if (ScorePlayer1 > ScorePlayer2)
+        {
+            data = "player1";
+        }
+        else if (ScorePlayer2 > ScorePlayer1)
+        {
+            data = "player2";
+        }
+        else
+        {
+            data = "draw";
+        }
+
+        FlutterUnityPlugin.Message message = new FlutterUnityPlugin.Message { data = data };
+        FlutterUnityPlugin.Messages.Send(message);
     }
 }
