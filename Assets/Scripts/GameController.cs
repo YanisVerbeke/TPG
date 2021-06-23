@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour
     public bool IsGameEnded { get; set; }
     public string ActualTurn { get; set; }
 
-    private GameObject _gamePanel, _playerPanel, _menuPanel, _resultPanel, _papersObject, _endText, _endButton;
+    private GameObject _gamePanel, _playerPanel, _menuPanel, _resultPanel, _papersObject, _endText, _endButton, _emptyRoll;
     private List<GameObject> _papersList;
     private Text _countdownText;
     private float _countdownTimer;
@@ -38,6 +38,7 @@ public class GameController : MonoBehaviour
         _endText = GameObject.Find("EndText");
         _endButton = GameObject.Find("EndButton");
         _visualTimer = GameObject.Find("VisualTimer").GetComponent<VisualTimer>();
+        _emptyRoll = GameObject.Find("EmptyRoll");
         FillPaperList();
         ResetGame();
     }
@@ -62,6 +63,7 @@ public class GameController : MonoBehaviour
         _menuPanel.SetActive(false);
         _papersObject.SetActive(false);
         _resultPanel.SetActive(false);
+        _emptyRoll.SetActive(false);
         switch (CurrentState)
         {
             case State.MENU:
@@ -77,6 +79,7 @@ public class GameController : MonoBehaviour
                 break;
             case State.RESULT:
                 _resultPanel.SetActive(true);
+                _emptyRoll.SetActive(true);
                 break;
             default:
                 break;

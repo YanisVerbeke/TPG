@@ -32,7 +32,12 @@ public class UiController : MonoBehaviour
             {
                 scoreP2Value++;
             }
-            ScoreP1Text.text = scoreP1Value.ToString();
+            if (Input.GetMouseButtonDown(0))
+            {
+                scoreP1Value = gameController.ScorePlayer1;
+                scoreP2Value = gameController.ScorePlayer2;
+            }
+                ScoreP1Text.text = scoreP1Value.ToString();
             ScoreP2Text.text = scoreP2Value.ToString();
         } else
         {
