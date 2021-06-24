@@ -50,7 +50,7 @@ public class DragRigidbody : MonoBehaviour
         {
             Vector3 mousePositionOffset = targetCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, selectionDistance)) - originalScreenTargetPosition;
             Vector3 newVelocity = (originalRigidbodyPos + mousePositionOffset - selectedRigidbody.GetComponent<Rigidbody>().transform.position) * forceAmount * Time.deltaTime;
-            if (newVelocity.y < 0 && newVelocity.y <= selectedRigidbody.GetComponent<Rigidbody>().velocity.y)
+            if (newVelocity.y < 0)
             {
                 selectedRigidbody.GetComponent<Rigidbody>().velocity = newVelocity;
                 foreach (var item in paperObjects)
