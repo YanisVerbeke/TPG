@@ -25,6 +25,8 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private List<Sprite> playerImages;
 
+    private int _messageId = 0;
+
 
     // Start is called before the first frame update
     void Start()
@@ -166,6 +168,7 @@ public class GameController : MonoBehaviour
 
         Player1Id = int.Parse(message.data.Split(',')[0]);
         Player2Id = int.Parse(message.data.Split(',')[1]);
+        _messageId = int.Parse(message.data.Split(',')[2]);
 
         ResetGame();
     }
@@ -176,18 +179,20 @@ public class GameController : MonoBehaviour
 
         if (ScorePlayer1 > ScorePlayer2)
         {
-            data = "player1";
+            data = "player1,";
         }
         else if (ScorePlayer2 > ScorePlayer1)
         {
-            data = "player2";
+            data = "player2,";
         }
         else
         {
-            data = "draw";
+            data = "draw,";
         }
 
-        FlutterUnityPlugin.Message message = new FlutterUnityPlugin.Message { data = data };
+        data += (_messageId + 1).ToString();
+
+        FlutterUnityPlugin.Message message = new FlutterUnityPlugin.Message { id = _messageId, data = data };
         FlutterUnityPlugin.Messages.Send(message);
     }
 }

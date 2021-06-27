@@ -47,7 +47,7 @@ public class ButtonHandler : MonoBehaviour
     public void QuitButton()
     {
         gameController.SendFlutterResult();
-        Application.Quit();
+        //Application.Quit();
         //gameController.ResetGame();
     }
 }
